@@ -28,12 +28,12 @@ pipeline:
     unstable_hold_time: 0.5
   trigger:
     mode: yolo                   # YOLO ONNX trigger verification
-    feature_position: Neck       # Neck feature
-    feature_abstraction_level: P4  # P4 abstraction
+    feature_position: Backbone       # Neck feature
+    feature_abstraction_level: fusion  # P4 abstraction
     # model_path omitted -> defaults to models/best_vis_with_8400_3.onnx (Neck).
     # To use the shared store: /vol/08822801/AutoTrigger/model/<name>.onnx
     # model_path: /vol/08822801/AutoTrigger/model/best_vis_with_8400_3.onnx
-    model_path: /Users/eason.hung/Documents/Projects/explus/model/best_vis_with_8400_3.onnx
+    model_path: /Users/eason.hung/Documents/Projects/explus/model/best_vis_with_8400_b3.onnx
     context_mirror_ratio: 0.0
     similarity_threshold: 0.6
   adaptive:

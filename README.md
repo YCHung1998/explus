@@ -82,8 +82,6 @@ output/<run>/
 | Perfect Capture Rate | — | 90.24% |
 | mAP (ActivityNet) | 0.239 | 0.200 |
 
-[AutoTrigger slide(2026-02-02)](https://docs.google.com/presentation/d/1_9LxiAdict5pj3IXNbtHb8rx88f29eX3T8jnwxlgSmE/edit?slide=id.g3bb66e257f6_1_0#slide=id.g3bb66e257f6_1_0)
-
 重現:`python -m mmaction2.evaluation.eval_custom --gt output/run_exp_neck_p4/ground_truth/data.json --pd output/run_exp_neck_p4/predictions/merge_data.json`。
 
 ---

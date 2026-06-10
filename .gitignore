@@ -1,0 +1,53 @@
+*.pyc
+*.swp
+*.jpg
+*.png
+*__pycache__
+*__pycache__/*
+*.pytest_cache
+*.pytest_cache/*
+.ipynb_checkpoints
+.ipynb_checkpoints/*
+*.coverage
+*.egg-info
+eggs/
+.eggs/
+.vscode/*
+*.log
+
+# python related
+!requirements.txt
+!requirements_test.txt
+
+# test output
+output*/*
+output/*
+!output/.reserve
+data/*
+!data/.reserve
+logs/*
+dags/*
+external_camera/
+datasets/
+records/
+mmaction2/demo/
+
+# terraform output
+terraform/*
+
+.DS_Store
+
+# JetBrains IDE
+.idea
+
+# Models
+model/
+weight/
+*.npy
+
+# data
+docs/
+
+# env
+.venv/*
+venv/*
