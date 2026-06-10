@@ -1,0 +1,55 @@
+# ============================================================================
+# run.example.yaml — single reference config for all runners.
+# Copy this to e.g. configs/my_run.yaml and edit.
+#
+#   python main.py        --config configs/my_run.yaml   (Phase B)
+#   python batch_infer.py --config configs/my_run.yaml   (Phase B)
+# ============================================================================
+
+# --- Input source ---------------------------------------------------------
+# The dataset CSV is a DERIVED index built from the ActivityNet GT json
+# (json stays the source of truth). Build / regenerate it with an ABSOLUTE
+# --src so the CSV stores absolute video paths (relative paths break once the
+# data is not under the current working directory, e.g. on a server mount):
+#   python scripts/build_dataset_csv.py \
+#       --src /vol/08822801/AutoTrigger/dataset/external_camera/ \
+#       --out datasets/bread_demo.csv
+# See README §5 for the full provenance chain.
+source:
+  type: dataset                 # dataset | video | camera
+  dataset: datasets/bread_demo.csv   # used when type == dataset
+  # video: path/to/clip.mp4          # used when type == video
+  # device: 0                        # used when type == camera (edge device)
+
+# --- Output ---------------------------------------------------------------
+output:
+  dir: output/exp_neck_p4       # predictions/ and ground_truth/ created here
+
+# --- Edge state recording (data collection) -------------------------------
+record:
+  enabled: false               # default OFF; CLI -sign_record overrides
+  path: records/{date}_states.csv   # append-only, same schema as dataset CSV
+
+# --- Algorithm parameters (= PipelineConfig) ------------------------------
+pipeline:
+  signal:
+    fps: 10
+    stable_hold_time: 0.1
+    unstable_hold_time: 0.5
+  trigger:
+    mode: yolo                  # yolo | ema_phash
+    feature_position: Neck      # Neck | Backbone
+    feature_abstraction_level: P4   # P4 | fusion
+    # model_path: explicit ONNX path. If omitted, defaults by feature_position
+    # (Neck -> models/best_vis_with_8400_3.onnx, Backbone -> ..._b3.onnx).
+    # Point at the shared model store, e.g.:
+    # model_path: /vol/08822801/AutoTrigger/model/best_vis_with_8400_3.onnx
+    context_mirror_ratio: 0.0
+    similarity_threshold: 0.6
+  adaptive:
+    motion_sensitivity: 30.0
+    pixel_diff_threshold: 15.0
+    global_motion_ratio: 0.85
+  texture:
+    texture_sensitivity_ratio: 0.15
+    texture_diff_threshold: 5

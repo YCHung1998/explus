@@ -1,0 +1,34 @@
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.black]
+line-length = 79
+target-version = ['py39']
+
+[tool.ruff]
+line-length = 79
+target-version = "py39"
+
+[tool.ruff.lint]
+# 這裡整合了：
+# E, W: Flake8 基礎規則
+# F: Pyflakes (錯誤偵測)
+# I: isort (自動排序 import)
+# D: pydocstyle (符合 Google/NumPy Docstring 規範)
+# N: pep8-naming (符合 Google 的變數命名規範)
+select = ["E", "F", "W", "I", "D", "N", "B"]
+
+# 針對 Google Style 的具體設定
+ignore = [
+    "D100", # 不強制要求每個檔案開頭都要有 docstring (視需求開啟)
+    "D104", # 不強制要求每個 __init__.py 都要有 docstring
+]
+
+[tool.ruff.lint.pydocstyle]
+# 強制使用 Google Style Docstrings
+convention = "google"
+
+[tool.ruff.lint.isort]
+# 讓 Ruff 的 import 排序與 Black 相容
+force-single-line = false
+lines-after-imports = 2

@@ -1,0 +1,5 @@
+2 Positive Unstable
+1 Stable
+3 Negative Unstable External Disturbances
+4 Negative Unstable Overexposure
+5 Trigger

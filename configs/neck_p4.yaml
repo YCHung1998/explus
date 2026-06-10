@@ -1,0 +1,44 @@
+# ============================================================================
+# neck_p4.yaml — YOLO trigger, Neck feature @ P4. Results under output/.
+#   1) python batch_infer.py --config configs/neck_p4.yaml      # produce outputs
+#   2) python -m mmaction2.evaluation.eval_custom --config configs/neck_p4.yaml
+# ============================================================================
+
+# --- Input source ---------------------------------------------------------
+# dataset CSV is a derived index (see README §5). Built with an absolute --src
+# in production; this reference points at the repo-local bread_demo.csv.
+source:
+  type: dataset
+  dataset: datasets/video_record.csv
+
+# --- Output ---------------------------------------------------------------
+output:
+  dir: output/run_exp_neck_p4        # predictions/ and ground_truth/ created here
+
+# --- Edge state recording (data collection) -------------------------------
+record:
+  enabled: false                 # default OFF; CLI -sign_record overrides
+  path: records/{date}_states.csv
+
+# --- Algorithm parameters (= PipelineConfig) ------------------------------
+pipeline:
+  signal:
+    fps: 10
+    stable_hold_time: 0.1
+    unstable_hold_time: 0.5
+  trigger:
+    mode: yolo                   # YOLO ONNX trigger verification
+    feature_position: Neck       # Neck feature
+    feature_abstraction_level: P4  # P4 abstraction
+    # model_path omitted -> defaults to models/best_vis_with_8400_3.onnx (Neck).
+    # To use the shared store: /vol/08822801/AutoTrigger/model/<name>.onnx
+    # model_path: /vol/08822801/AutoTrigger/model/best_vis_with_8400_3.onnx
+    context_mirror_ratio: 0.0
+    similarity_threshold: 0.6
+  adaptive:
+    motion_sensitivity: 30.0
+    pixel_diff_threshold: 15.0
+    global_motion_ratio: 0.85
+  texture:
+    texture_sensitivity_ratio: 0.15
+    texture_diff_threshold: 5
