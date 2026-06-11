@@ -1,5 +1,6 @@
 """Streamlit application for interactive motion detection."""
 
+import argparse
 import os
 import time
 
@@ -19,6 +20,32 @@ import path_utils
 def get_detection_pipeline(config: PipelineConfig) -> DetectionPipeline:
     """Create and cache detection pipeline instance."""
     return DetectionPipeline(config)
+
+
+@st.cache_resource
+def load_config_defaults():
+    """Load trigger/model defaults from an optional run.yaml.
+
+    Run with:  streamlit run streamlit_app.py -- --config configs/neck_p4.yaml
+    The yaml's `pipeline.trigger` (model_path, feature_position, ...) pre-fills
+    the sidebar so the demo reuses a working model path instead of relying on
+    the built-in default (which may not exist on this machine).
+
+    Returns a dict {"path", "pipeline", "error"} or None when no --config given.
+    """
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument("--config", default=None)
+    args, _ = parser.parse_known_args()
+    if not args.config:
+        return None
+    try:
+        from src.config.run_config import RunConfig
+
+        return {"path": args.config,
+                "pipeline": RunConfig.from_yaml(args.config).pipeline,
+                "error": None}
+    except Exception as exc:  # noqa: BLE001 - surfaced to the UI
+        return {"path": args.config, "pipeline": None, "error": str(exc)}
 
 
 def compose_altair_heatmap(image, chart_size: int = 400):
@@ -61,6 +88,14 @@ def compose_altair_heatmap(image, chart_size: int = 400):
 def main():
     st.set_page_config(layout="wide", page_title="Motion Detection System")
     st.header("🎯 Motion Detection System - Interactive Demo")
+
+    # Optional run.yaml supplying model/trigger defaults (-- --config <yaml>).
+    cfg_file = load_config_defaults()
+    trig_defaults = cfg_file["pipeline"].trigger if cfg_file and cfg_file["pipeline"] else None
+    if cfg_file and cfg_file["error"]:
+        st.warning(f"⚠️ Failed to load --config `{cfg_file['path']}`: {cfg_file['error']}")
+    elif cfg_file:
+        st.caption(f"📄 Model/trigger defaults loaded from `{cfg_file['path']}`")
 
     # ========== Settings Panel ==========
     with st.sidebar:
@@ -257,18 +292,40 @@ def main():
             st.divider()
             st.subheader("🔔 Trigger Parameters")
 
+            mode_options = ["yolo", "ema_phash"]
+            mode_default = trig_defaults.mode if trig_defaults else "yolo"
             trigger_mode = st.selectbox(
                 "Trigger Mode",
-                options=["yolo", "ema_phash"],
-                index=0,
+                options=mode_options,
+                index=mode_options.index(mode_default) if mode_default in mode_options else 0,
                 help="Verification method for triggers",
             )
 
             if trigger_mode == "yolo":
+                fp_options = ["Neck", "Backbone"]
+                fp_default = trig_defaults.feature_position if trig_defaults else "Neck"
+                feature_position = st.selectbox(
+                    "Feature Position (model)",
+                    options=fp_options,
+                    index=fp_options.index(fp_default) if fp_default in fp_options else 0,
+                    help="Selects the default ONNX model: "
+                    "Neck -> models/best_vis_with_8400_3.onnx, "
+                    "Backbone -> models/best_vis_with_8400_b3.onnx",
+                )
+
+                model_path = st.text_input(
+                    "Model Path (override)",
+                    value=(trig_defaults.model_path or "") if trig_defaults else "",
+                    help="Explicit ONNX path. Leave empty to use the default for "
+                    "the selected Feature Position. Pre-filled from --config when given.",
+                )
+
+                fl_options = ["P4", "fusion"]
+                fl_default = trig_defaults.feature_abstraction_level if trig_defaults else "P4"
                 feature_level = st.selectbox(
                     "Feature Abstraction Level",
-                    options=["P4", "fusion"],
-                    index=0,
+                    options=fl_options,
+                    index=fl_options.index(fl_default) if fl_default in fl_options else 0,
                     help="Model feature layer to extract",
                 )
 
@@ -400,6 +457,8 @@ def main():
     config.signal.unstable_hold_time = signal_unstable_hold
     config.trigger.mode = trigger_mode
     if trigger_mode == "yolo":
+        config.trigger.feature_position = feature_position
+        config.trigger.model_path = model_path.strip() or None
         config.trigger.feature_abstraction_level = feature_level
         config.trigger.context_mirror_ratio = context_mirror_ratio
         config.trigger.similarity_threshold = similarity_threshold
@@ -410,6 +469,18 @@ def main():
     
     config.trigger.boundary = adaptive_boundary
     config.history_size = history_size
+
+    # Fail fast with a clear message if the (config-driven) model is missing,
+    # instead of a deep onnxruntime error inside the pipeline.
+    if trigger_mode == "yolo":
+        resolved_model = config.trigger.resolved_model_path
+        if not os.path.exists(resolved_model):
+            st.error(
+                f"❌ ONNX model not found: `{resolved_model}`. "
+                "Pass `-- --config <run.yaml>` or set **Model Path (override)** "
+                "in the sidebar."
+            )
+            return
 
     # Initialize pipeline
     pipeline = get_detection_pipeline(config)
