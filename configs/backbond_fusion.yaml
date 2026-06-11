@@ -13,7 +13,7 @@ source:
 
 # --- Output ---------------------------------------------------------------
 output:
-  dir: output/run_exp_neck_p4        # predictions/ and ground_truth/ created here
+  dir: output/run_exp_backbone_fusion        # predictions/ and ground_truth/ created here
 
 # --- Edge state recording (data collection) -------------------------------
 record:

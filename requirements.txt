@@ -16,6 +16,7 @@ pyyaml
 flask
 absl-py
 tqdm
+matplotlib
 
 scikit-learn  # Kmeans (Dominant Color)
 

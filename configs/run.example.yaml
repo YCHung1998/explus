@@ -17,7 +17,7 @@
 # See README §5 for the full provenance chain.
 source:
   type: dataset                 # dataset | video | camera
-  dataset: datasets/bread_demo.csv   # used when type == dataset
+  dataset: datasets/video_record.csv   # used when type == dataset
   # video: path/to/clip.mp4          # used when type == video
   # device: 0                        # used when type == camera (edge device)
 
@@ -44,6 +44,7 @@ pipeline:
     # (Neck -> models/best_vis_with_8400_3.onnx, Backbone -> ..._b3.onnx).
     # Point at the shared model store, e.g.:
     # model_path: /vol/08822801/AutoTrigger/model/best_vis_with_8400_3.onnx
+    model_path: /Users/eason.hung/Documents/Projects/explus/model/best_vis_with_8400_3.onnx
     context_mirror_ratio: 0.0
     similarity_threshold: 0.6
   adaptive:

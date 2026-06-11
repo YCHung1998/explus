@@ -62,7 +62,10 @@
 1. **啟動應用**
    ```bash
    streamlit run streamlit_app.py
+   # 或從 run.yaml 帶入 model / trigger 預設(注意 `--` 之後才是給程式的參數):
+   streamlit run streamlit_app.py -- --config configs/neck_p4.yaml
    ```
+   帶 `--config` 時,側邊欄的 **Trigger Mode / Feature Position / Model Path / Feature Abstraction Level** 會自動以該 yaml 的 `pipeline.trigger` 設定預填,避免用到本機不存在的預設 model 路徑(仍可在側邊欄手動覆寫)。
 
 2. **調整參數**
    - 在左側邊欄調整各項參數

@@ -1,6 +1,10 @@
-# AutoTrigger — 即時觸發偵測系統
+### Slides
+[AutoTrigger v2](https://docs.google.com/presentation/d/1aJF0RL69w7tJLthgDJLLyZP8ysn_I2pG-hzzKn7oXL4/edit?slide=id.p#slide=id.p)
+[AutoTrigger Benchmark slide(2026-02-02)](https://docs.google.com/presentation/d/1_9LxiAdict5pj3IXNbtHb8rx88f29eX3T8jnwxlgSmE/edit?slide=id.g3bb66e257f6_1_0#slide=id.g3bb66e257f6_1_0)
 
+# AutoTrigger — 即時觸發偵測系統
 針對固定攝影機場景(bread checkout / demo room)的**觸發事件偵測**:偵測畫面從「穩定」轉為「不穩定」並完成一次有效操作(Trigger),最終目標是部署到 **real-time edge device**。
+
 
 ```
 影像輸入 ─► 前處理 ─► 動態偵測 ─► 訊號狀態機 ─► 觸發驗證 ─► 輸出 segment
@@ -52,6 +56,7 @@ python batch_infer_phash.py --config configs/run.yaml   # 舊 phash 批次線
 python -m mmaction2.evaluation.eval_custom --config configs/run.yaml
 python eval_dashboard.py --config configs/run.yaml --port 5005   # Flask 評估儀表板
 python visual_results.py --config configs/run.yaml --port 5000   # 時間軸視覺化
+streamlit run streamlit_app.py -- --config configs/run.yaml       # 互動調參,見 README_STREAMLIT.md
 streamlit run streamlit_app.py                                    # 互動調參,見 README_STREAMLIT.md
 ```
 
