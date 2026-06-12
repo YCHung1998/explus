@@ -125,6 +125,23 @@ python scripts/build_dataset_csv.py \
 
 CSV 欄位:`video_path, start, end, label, split, enabled, boundary`。
 
+### Boundary 標記補充
+
+下圖為 VIDAT2 標註介面,可同時對照 boundary(空間)與 temporal domain(時間)兩種標記方式:
+
+![VIDAT2 標註介面:中央紅框為 boundary object,最上方為時間軸,最下方為 Actions / Video Segments](assets/vidats_view.png)
+
+- **Q1:VIDAT 如何模擬標記 boundary?**
+    - Ans:同一支 video 內,boundary 照常理是固定不變的。標記時於 **frame 0** 的影像在 **Objects** 面板建立一個 object(如上圖中央的紅色 bounding box),指定 `[x, y, w, h]` 並把 **label 設為 `0`**,該 object 即代表 boundary。其餘幀可忽略、不需重複紀錄 boundary object。
+- **Q2:VIDAT 怎麼紀錄 temporal domain?**
+    - Ans:在介面**最上方拖動時間軸**選定起訖區間,再到下方 **Actions / Video Segments** 區塊右側點選 **+ADD** 即可標記該時間段的 action / segment。
+- **Q3: 如果要新增標記資料**
+    - Ans:
+    1. 要提供 configs.json (`/vol/08822801/AutoTrigger/dataset/external_camera` 之下) 
+    2. Preferences (左邊欄位打開), Default FPS 30 (符合vvk 收video 的設定.)
+    3. 在 frame 0 標記 object 視為 boundary.
+    4. 在 time interval 設定哪些區段是 **前後幀結束不變(Positive Unstable)**, 哪些區段是 **前後幀結束後改變(Trigger)**
+
 ---
 
 ## 5. Config 驅動
