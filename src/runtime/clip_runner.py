@@ -187,7 +187,7 @@ def _process_capture(cap, pipeline, *, frame_rate, source_is_file,
                             cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
                 status_text = (f"Motion: {'YES' if is_motion else 'NO'} | "
                                f"{'STABLE' if is_stable else 'UNSTABLE'} "
-                               f"{'\n[TRIGGER]' if signal_is_trigger else '\n'}")
+                               f"\n{'[TRIGGER]' if signal_is_trigger else ''}")
                 cv2.putText(debug_view, status_text, (10, 60),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
                 if save_video:
